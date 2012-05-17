@@ -64,6 +64,17 @@
             expect(Burry.get('akey')).toBeUndefined();
         });
 
+        it('adds a key/value when the key does not already exist or has expired', function () {
+            Burry.set('akey', {foo: 'bar'});
+            Burry.add('akey', {bar: 'foo'});
+            expect(Burry.get('akey')).toEqual({foo: 'bar'});
+            Burry.add('otherkey', {foo: 'bar'});
+            expect(Burry.get('otherkey')).toEqual({foo: 'bar'});
+            Burry.set('akey', {foo: 'bar'}, -10);
+            Burry.add('akey', {bar: 'foo'});
+            expect(Burry.get('akey')).toEqual({bar: 'foo'});
+        });
+
         it('can remove a key/value', function () {
             Burry.set('akey', {foo: 'bar'});
             Burry.remove('akey');
