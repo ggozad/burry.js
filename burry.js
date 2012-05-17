@@ -57,6 +57,13 @@
             }
         },
 
+        _getCounter: function (bkey) {
+            var value = localStorage.getItem(bkey);
+            if (value === null) return 0;
+
+            return parseInt(value, 10);
+        },
+
         // Returns the value of `key` from the cache, `undefined` if the `key` has
         // expired or is not stored.
         get: function (key) {
@@ -127,6 +134,24 @@
         remove: function (key) {
             localStorage.removeItem(Burry._internalKey(key));
             localStorage.removeItem(Burry._expirationKey(key));
+        },
+
+        // Counters
+
+        // Increments the integer value of `key` by 1
+        incr: function (key) {
+            var bkey = Burry._internalKey(key),
+                value = this._getCounter(bkey);
+            value++;
+            localStorage.setItem(bkey, value);
+        },
+
+        // Decrements the integer value of `key` by 1
+        decr: function (key) {
+            var bkey = Burry._internalKey(key),
+                value = this._getCounter(bkey);
+            value--;
+            localStorage.setItem(bkey, value);
         },
 
         // Returns whether a key has expired.

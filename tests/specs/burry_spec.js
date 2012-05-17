@@ -94,6 +94,24 @@
             expect(localStorage.getItem('akey-_burry_exp_')).toBeNull();
         });
 
+        it('increments a counter', function () {
+            Burry.incr('counter');
+            expect(Burry.get('counter')).toEqual(1);
+            Burry.set('counter', 0);
+            Burry.incr('counter');
+            Burry.incr('counter');
+            expect(Burry.get('counter')).toEqual(2);
+        });
+
+        it('decrements a counter', function () {
+            Burry.decr('counter');
+            expect(Burry.get('counter')).toEqual(-1);
+            Burry.set('counter', 0);
+            Burry.decr('counter');
+            Burry.decr('counter');
+            expect(Burry.get('counter')).toEqual(-2);
+        });
+
         it('can tell if an item has expired', function () {
             Burry.set('akey', {foo: 'bar'});
             expect(Burry.hasExpired('akey')).toBeFalsy();
