@@ -124,6 +124,19 @@
             return false;
         },
 
+        // Returns a list of all the cached keys
+        keys: function () {
+            var i, bkey, key, results = [];
+            for (i=0; i < localStorage.length ; i++) {
+                bkey = localStorage.key(i);
+                key = Burry._isInternalKey(bkey);
+                if (key) {
+                    results.push(key);
+                }
+            }
+            return results;
+        },
+
         // Returns an object with all the expirable keys. The values are the expiration time
         // in minutes since Epoch.
         expirableKeys: function () {

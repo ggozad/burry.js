@@ -81,13 +81,20 @@
             expect(Burry.hasExpired('akey')).toBeTruthy();
         });
 
+        it('returns all cache keys', function () {
+            var keys;
+            Burry.set('expirable1', {foo: 'bar'}, 10);
+            Burry.set('expirable2', {foo: 'bar'}, -20);
+            Burry.set('non-expirable', {foo: 'bar'});
+            expect(Burry.keys()).toEqual(['non-expirable', 'expirable2', 'expirable1']);
+        });
+
         it('returns all expirable keys', function () {
             var expirable, fakedate = new Date(0);
             spyOn(window, 'Date').andReturn(fakedate);
             Burry.set('expirable1', {foo: 'bar'}, 10);
             Burry.set('expirable2', {foo: 'bar'}, 20);
             Burry.set('non-expirable', {foo: 'bar'});
-            expirable = Burry.expirableKeys();
             expect(Burry.expirableKeys()).toEqual({expirable1: 10, expirable2: 20});
         });
 
