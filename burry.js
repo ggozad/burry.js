@@ -109,9 +109,16 @@
             }
         },
 
-        // Sets a `key`/`value` on the cache as does **set** but only if the key is not already cached or has expired.
+        // Sets a `key`/`value` on the cache as does **set** but only if the key does not already exist or has expired.
         add: function (key, value, time) {
             if (localStorage.getItem(Burry._internalKey(key)) === null || this.hasExpired(key)) {
+                this.set(key, value, time);
+            }
+        },
+
+        // Sets a `key`/`value` on the cache as does **set** but only if the key already exist and has not expired.
+        replace: function (key, value, time) {
+            if (localStorage.getItem(Burry._internalKey(key)) !== null && !this.hasExpired(key)) {
                 this.set(key, value, time);
             }
         },
