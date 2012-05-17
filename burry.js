@@ -5,7 +5,7 @@
 //    http://github.com/ggozad/burry.js
 
 
-(function (_) {
+(function () {
 
     var Burry = {
 
@@ -140,10 +140,11 @@
 
         // Removes all expired items.
         flushExpired: function () {
-            var expirable = this.expirableKeys(), now = Burry._mEpoch();
-            _.each(expirable, function (val, key) {
+            var expirable = this.expirableKeys(), now = Burry._mEpoch(), key, val;
+            for (key in expirable) {
+                val = expirable[key];
                 if (val < now) this.remove(key);
-            }, this);
+            }
         },
 
         // Checks for localStorage support.
@@ -159,9 +160,8 @@
             }
             return true;
         }
-
     };
 
     this.Burry = Burry;
 
-})(this._);
+})();
