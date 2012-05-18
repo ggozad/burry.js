@@ -1,4 +1,4 @@
-(function (_, Burry) {
+(function (Burry) {
 
     describe('Burry.js Storage', function () {
 
@@ -20,12 +20,12 @@
             expect(Burry._expirationKey(12345)).toEqual('12345-_burry_exp_');
         });
 
-        it('can decide whether a key is a "burry" key', function () {
+        it('decides whether a key is a "burry" key', function () {
             expect(Burry._isInternalKey('foo-_burry_')).toEqual('foo');
             expect(Burry._isInternalKey('foo-_burry_bar')).toBeFalsy();
         });
 
-        it('can decide whether a key is a "burry" expiration key', function () {
+        it('decides whether a key is a "burry" expiration key', function () {
             expect(Burry._isExpirationKey('foo-_burry_exp_')).toEqual('foo');
             expect(Burry._isExpirationKey('foo-_burry_exp_bar')).toBeFalsy();
         });
@@ -86,7 +86,7 @@
             expect(Burry.get('akey')).not.toBeDefined();
         });
 
-        it('can remove a key/value', function () {
+        it('removes a key/value', function () {
             Burry.set('akey', {foo: 'bar'});
             Burry.remove('akey');
             expect(Burry.get('akey')).toBeUndefined();
@@ -112,7 +112,7 @@
             expect(Burry.get('counter')).toEqual(-2);
         });
 
-        it('can tell if an item has expired', function () {
+        it('determines if an item has expired', function () {
             Burry.set('akey', {foo: 'bar'});
             expect(Burry.hasExpired('akey')).toBeFalsy();
             Burry.set('akey', {foo: 'bar'}, 10);
@@ -138,7 +138,7 @@
             expect(Burry.expirableKeys()).toEqual({expirable1: 10, expirable2: 20});
         });
 
-        it('can flush all Burry items', function () {
+        it('flushes all Burry items', function () {
             Burry.set('expirable2', {foo: 'bar'}, 20);
             Burry.set('non-expirable', {foo: 'bar'});
             localStorage.setItem('foo', 'bar');
@@ -147,7 +147,7 @@
             expect(localStorage.key(0)).toEqual('foo');
         });
 
-        it('can flush expired key/values', function () {
+        it('flushes expired key/values', function () {
             Burry.set('expired1', {foo: 'bar'}, -1);
             Burry.set('expired2', {foo: 'bar'}, -2);
             Burry.set('not-expired', {foo: 'bar'}, 10);
@@ -159,7 +159,7 @@
             expect(Burry.get('not-expired')).toBeDefined();
         });
 
-        it('will remove expired objects when setting a value that does not fit in localStorage', function () {
+        it('removes expired objects when setting a value that does not fit in localStorage', function () {
             var biggie = Array(1024*1024 + 1).join('0'),
                 key = '';
             while (true) {
@@ -179,4 +179,4 @@
         });
     });
 
-})(this._, this.Burry);
+})(this.Burry);
