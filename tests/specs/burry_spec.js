@@ -138,6 +138,15 @@
             expect(Burry.expirableKeys()).toEqual({expirable1: 10, expirable2: 20});
         });
 
+        it('can flush all Burry items', function () {
+            Burry.set('expirable2', {foo: 'bar'}, 20);
+            Burry.set('non-expirable', {foo: 'bar'});
+            localStorage.setItem('foo', 'bar');
+            Burry.flush();
+            expect(localStorage.length).toEqual(1);
+            expect(localStorage.key(0)).toEqual('foo');
+        });
+
         it('can flush expired key/values', function () {
             Burry.set('expired1', {foo: 'bar'}, -1);
             Burry.set('expired2', {foo: 'bar'}, -2);

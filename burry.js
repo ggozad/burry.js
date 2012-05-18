@@ -191,6 +191,19 @@
             return results;
         },
 
+        // Removes all Burry items from `localStorage`.
+        flush: function () {
+            var i, key, remove = [];
+            for (i=0; i < localStorage.length ; i++) {
+                key = localStorage.key(i);
+                if (Burry._isInternalKey(key) || Burry._isExpirationKey(key)) {
+                    remove.push(key);
+                }
+            }
+            for (i=0; i<remove.length; i++)
+                localStorage.removeItem(remove[i]);
+        },
+
         // Removes all expired items.
         flushExpired: function () {
             var expirable = this.expirableKeys(), now = Burry._mEpoch(), key, val;
