@@ -5,7 +5,17 @@
 //    http://github.com/ggozad/burry.js
 
 
-(function () {
+(function (root, factory) {
+    if (typeof define === 'function' && define.amd) {
+        // AMD. Register as an anonymous module.
+        define([], function () {
+            return factory();
+        });
+    } else {
+        // Browser globals
+        root.Burry = factory();
+    }
+}(this, function () {
 
     var Burry = {
 
@@ -228,6 +238,5 @@
         }
     };
 
-    this.Burry = Burry;
-
-})();
+    return Burry;
+}));
