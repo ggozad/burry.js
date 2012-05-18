@@ -177,7 +177,7 @@
             return results;
         },
 
-        // Returns an object with all the expirable keys. The values are the expiration ttl
+        // Returns an object with all the expirable keys. The values are the ttl
         // in minutes since Epoch.
         expirableKeys: function () {
             var i, bkey, key, results = {};

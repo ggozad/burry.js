@@ -38,6 +38,12 @@ The following more esoteric functions are also exposed:
 
  * `Burry.add(key, value, ttl)`, same as `set` except it will only add the key if it does not already exist, or it has already expired.
  * `Burry.replace(key, value, ttl)`, same as `set` except it will only add the key if it does already exist and has not expired.
+ * `Burry.flush()`, removes from `localStorage` all Burry items.
+ * `Burry.flushExpired()`, removes from `localStorage` all expired Burry items.
+ * `Burry.keys()`, returns all stored keys.
+ * `Burry.expirableKeys()` return an dictionary of key/values where the values are the TTL of the keys from Epoch.
+ * `Burry.hasExpired(key)`, returns whether a key has expired.
+ * `Burry.isSupported()`, returns whether `localStorage` and `JSON` serialization are supported on the browser.
 
 ## License
 
