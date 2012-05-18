@@ -57,6 +57,7 @@
             }
         },
 
+        // Parse the value of a key as an integer.
         _getCounter: function (bkey) {
             var value = localStorage.getItem(bkey);
             if (value === null) return 0;
@@ -83,16 +84,16 @@
             return value;
         },
 
-        // Sets a `key`/`value` on the cache. Optionally, sets the expiration in `time` minutes.
-        set: function (key, value, time) {
+        // Sets a `key`/`value` on the cache. Optionally, sets the expiration in `ttl` minutes.
+        set: function (key, value, ttl) {
             var i, bkey, expires = {};
             if (typeof key === undefined || typeof value === undefined) return;
             value = JSON.stringify(value);
             try {
                 localStorage.setItem(Burry._internalKey(key), value);
-                if (time) {
-                    time = parseInt(time, 10);
-                    localStorage.setItem(Burry._expirationKey(key), Burry._mEpoch() + time);
+                if (ttl) {
+                    ttl = parseInt(ttl, 10);
+                    localStorage.setItem(Burry._expirationKey(key), Burry._mEpoch() + ttl);
                 } else {
                     localStorage.removeItem(Burry._expirationKey(key));
                 }
@@ -102,9 +103,9 @@
                     this.flushExpired();
                     try {
                         localStorage.setItem(Burry._internalKey(key), value);
-                        if (time) {
-                            time = parseInt(time, 10);
-                            localStorage.setItem(Burry._expirationKey(key), Burry._mEpoch() + time);
+                        if (ttl) {
+                            ttl = parseInt(ttl, 10);
+                            localStorage.setItem(Burry._expirationKey(key), Burry._mEpoch() + ttl);
                         } else {
                             localStorage.removeItem(Burry._expirationKey(key));
                         }
@@ -117,16 +118,16 @@
         },
 
         // Sets a `key`/`value` on the cache as does **set** but only if the key does not already exist or has expired.
-        add: function (key, value, time) {
+        add: function (key, value, ttl) {
             if (localStorage.getItem(Burry._internalKey(key)) === null || this.hasExpired(key)) {
-                this.set(key, value, time);
+                this.set(key, value, ttl);
             }
         },
 
         // Sets a `key`/`value` on the cache as does **set** but only if the key already exist and has not expired.
-        replace: function (key, value, time) {
+        replace: function (key, value, ttl) {
             if (localStorage.getItem(Burry._internalKey(key)) !== null && !this.hasExpired(key)) {
-                this.set(key, value, time);
+                this.set(key, value, ttl);
             }
         },
 
@@ -154,7 +155,7 @@
             localStorage.setItem(bkey, value);
         },
 
-        // Returns whether a key has expired.
+        // Returns whether `key` has expired.
         hasExpired: function (key) {
             var expireson = this._expiresOn(key);
             if (expireson && (expireson < Burry._mEpoch())) {
@@ -176,7 +177,7 @@
             return results;
         },
 
-        // Returns an object with all the expirable keys. The values are the expiration time
+        // Returns an object with all the expirable keys. The values are the expiration ttl
         // in minutes since Epoch.
         expirableKeys: function () {
             var i, bkey, key, results = {};
@@ -199,7 +200,7 @@
             }
         },
 
-        // Checks for localStorage support.
+        // Checks for localStorage & JSON support.
         isSupported: function () {
             try {
                 localStorage.setItem('_burry_', '_burry_');
