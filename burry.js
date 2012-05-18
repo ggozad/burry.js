@@ -72,8 +72,8 @@
             if (value === null) {
                 return undefined;
             }
-            if (this.hasExpired(key)) {
-                 this.remove(key);
+            if (Burry.hasExpired(key)) {
+                 Burry.remove(key);
                 return undefined;
             }
             try {
@@ -100,7 +100,7 @@
             } catch (e) {
                 if (e.name === 'QUOTA_EXCEEDED_ERR' || e.name === 'NS_ERROR_DOM_QUOTA_REACHED') {
                     // No space left on localStorage, let's flush expired items and try agagin.
-                    this.flushExpired();
+                    Burry.flushExpired();
                     try {
                         localStorage.setItem(Burry._internalKey(key), value);
                         if (ttl) {
@@ -119,15 +119,15 @@
 
         // Sets a `key`/`value` on the cache as does **set** but only if the key does not already exist or has expired.
         add: function (key, value, ttl) {
-            if (localStorage.getItem(Burry._internalKey(key)) === null || this.hasExpired(key)) {
-                this.set(key, value, ttl);
+            if (localStorage.getItem(Burry._internalKey(key)) === null || Burry.hasExpired(key)) {
+                Burry.set(key, value, ttl);
             }
         },
 
         // Sets a `key`/`value` on the cache as does **set** but only if the key already exist and has not expired.
         replace: function (key, value, ttl) {
-            if (localStorage.getItem(Burry._internalKey(key)) !== null && !this.hasExpired(key)) {
-                this.set(key, value, ttl);
+            if (localStorage.getItem(Burry._internalKey(key)) !== null && !Burry.hasExpired(key)) {
+                Burry.set(key, value, ttl);
             }
         },
 
@@ -142,7 +142,7 @@
         // Increments the integer value of `key` by 1
         incr: function (key) {
             var bkey = Burry._internalKey(key),
-                value = this._getCounter(bkey);
+                value = Burry._getCounter(bkey);
             value++;
             localStorage.setItem(bkey, value);
         },
@@ -150,14 +150,14 @@
         // Decrements the integer value of `key` by 1
         decr: function (key) {
             var bkey = Burry._internalKey(key),
-                value = this._getCounter(bkey);
+                value = Burry._getCounter(bkey);
             value--;
             localStorage.setItem(bkey, value);
         },
 
         // Returns whether `key` has expired.
         hasExpired: function (key) {
-            var expireson = this._expiresOn(key);
+            var expireson = Burry._expiresOn(key);
             if (expireson && (expireson < Burry._mEpoch())) {
                 return true;
             }
@@ -206,10 +206,10 @@
 
         // Removes all expired items.
         flushExpired: function () {
-            var expirable = this.expirableKeys(), now = Burry._mEpoch(), key, val;
+            var expirable = Burry.expirableKeys(), now = Burry._mEpoch(), key, val;
             for (key in expirable) {
                 val = expirable[key];
-                if (val < now) this.remove(key);
+                if (val < now) Burry.remove(key);
             }
         },
 
