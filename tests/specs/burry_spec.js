@@ -26,6 +26,28 @@
                 expect(Burry.isSupported()).toBeTruthy();
             });
 
+            it('flushes expired key/values from all stores', function () {
+                burryfoo = new Burry('foo');
+                burrybar = new Burry('bar');
+                burryfoo.set('expired1', {foo: 'bar'}, -1);
+                burryfoo.set('expired2', {foo: 'bar'}, -2);
+                burryfoo.set('not-expired', {foo: 'bar'}, 10);
+                burrybar.set('expired1', {foo: 'bar'}, -1);
+                burrybar.set('expired2', {foo: 'bar'}, -2);
+                burrybar.set('not-expired', {foo: 'bar'}, 10);
+                Burry.flushExpired();
+                expect(localStorage.getItem(burryfoo._internalKey('expired1'))).toBeNull();
+                expect(localStorage.getItem(burryfoo._expirationKey('expired1'))).toBeNull();
+                expect(localStorage.getItem(burryfoo._internalKey('expired2'))).toBeNull();
+                expect(localStorage.getItem(burryfoo._expirationKey('expired2'))).toBeNull();
+                expect(burryfoo.get('not-expired')).toBeDefined();
+                expect(localStorage.getItem(burrybar._internalKey('expired1'))).toBeNull();
+                expect(localStorage.getItem(burrybar._expirationKey('expired1'))).toBeNull();
+                expect(localStorage.getItem(burrybar._internalKey('expired2'))).toBeNull();
+                expect(localStorage.getItem(burrybar._expirationKey('expired2'))).toBeNull();
+                expect(burrybar.get('not-expired')).toBeDefined();
+
+            });
         });
 
         describe('Instance methods', function () {

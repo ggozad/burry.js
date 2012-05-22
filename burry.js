@@ -61,6 +61,28 @@
         return true;
     };
 
+    Burry.flushExpired = function () {
+        var i, match, key, val, ns,
+            remove = [],
+            now = Burry._mEpoch();
+
+        for (i=0; i< localStorage.length; i++) {
+            key = localStorage.key(i);
+            match = key.match(/(.+)-_burry_exp_(.*)/);
+            if (match) {
+                val = localStorage.getItem(key);
+                if (val < now) {
+                    key = match[1]; ns = match[2];
+                    remove.push(key + Burry.prototype._CACHE_SUFFIX + ns);
+                    remove.push(key + Burry.prototype._EXPIRY_KEY + ns);
+                }
+            }
+        }
+        for (i=0; i< remove.length; i++) {
+            localStorage.removeItem(remove[i]);
+        }
+    };
+
     // Instance methods
     Burry.prototype = {
 
@@ -119,7 +141,7 @@
                 return undefined;
             }
             if (this.hasExpired(key)) {
-                 this.remove(key);
+                this.remove(key);
                 return undefined;
             }
             try {
@@ -146,7 +168,7 @@
             } catch (e) {
                 if (e.name === 'QUOTA_EXCEEDED_ERR' || e.name === 'NS_ERROR_DOM_QUOTA_REACHED') {
                     // No space left on localStorage, let's flush expired items and try agagin.
-                    this.flushExpired();
+                    Burry.flushExpired();
                     try {
                         localStorage.setItem(this._internalKey(key), value);
                         if (ttl) {
