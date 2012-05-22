@@ -15,6 +15,13 @@
                 burrybar2 = new Burry('bar');
                 expect(Burry.stores()).toEqual(['', 'foo', 'bar']);
             });
+
+            it('calculates time elapsed since epoch in minutues', function () {
+                var datea = new Date(10 * 60 * 1000);
+                spyOn(window, 'Date').andReturn(datea);
+                expect(Burry._mEpoch()).toEqual(10);
+            });
+
         });
 
         describe('Instance methods', function () {
@@ -25,11 +32,6 @@
                 burry = new Burry('');
             });
 
-            it('calculates time elapsed since epoch in minutues', function () {
-                var datea = new Date(10 * 60 * 1000);
-                spyOn(window, 'Date').andReturn(datea);
-                expect(burry._mEpoch()).toEqual(10);
-            });
 
             it('calculates the key used internally', function () {
                 expect(burry._internalKey('akey')).toEqual('akey-_burry_');
@@ -69,7 +71,7 @@
             it('stores a key/value to localStorage with an expiration time', function () {
                 burry.set('akey', {foo: 'bar'}, 10);
                 expect(localStorage.getItem('akey-_burry_')).toEqual('{"foo":"bar"}');
-                expect(parseInt(localStorage.getItem('akey-_burry_exp_'), 10)).toEqual(burry._mEpoch() + 10);
+                expect(parseInt(localStorage.getItem('akey-_burry_exp_'), 10)).toEqual(Burry._mEpoch() + 10);
             });
 
             it('returns the value from a stored key', function () {
@@ -84,7 +86,7 @@
             it('returns undefined for an expired key, and removes it from localStorage', function () {
                 burry.set('akey', {foo: 'bar'}, -1);
                 expect(localStorage.getItem('akey-_burry_')).toEqual('{"foo":"bar"}');
-                expect(parseInt(localStorage.getItem('akey-_burry_exp_'), 10)).toEqual(burry._mEpoch() - 1);
+                expect(parseInt(localStorage.getItem('akey-_burry_exp_'), 10)).toEqual(Burry._mEpoch() - 1);
                 expect(burry.get('akey')).toBeUndefined();
                 expect(localStorage.getItem('akey-_burry_')).toBeNull();
                 expect(localStorage.getItem('akey-_burry_exp_')).toBeNull();

@@ -29,6 +29,14 @@
         localStorage.setItem('_burry_stores_', JSON.stringify(stores));
     };
 
+    // time resolution in minutes
+    Burry._EXPIRY_UNITS = 60 * 1000;
+
+    // Calculate the time since Epoch in minutes
+    Burry._mEpoch = function () {
+        return Math.floor((new Date().getTime())/Burry._EXPIRY_UNITS);
+    };
+
     Burry.stores = function () {
         var stores = localStorage.getItem('_burry_stores_');
         if (stores) {
@@ -47,13 +55,6 @@
         _CACHE_SUFFIX: '-_burry_',
         // key used to store expiration data
         _EXPIRY_KEY: '-_burry_exp_',
-        // time resolution in minutes
-        _EXPIRY_UNITS: 60 * 1000,
-
-        // Calculate the time since Epoch in minutes
-        _mEpoch: function () {
-            return Math.floor((new Date().getTime())/this._EXPIRY_UNITS);
-        },
 
         // Return the internally used suffixed key.
         _internalKey: function (key) {
@@ -124,7 +125,7 @@
                 localStorage.setItem(this._internalKey(key), value);
                 if (ttl) {
                     ttl = parseInt(ttl, 10);
-                    localStorage.setItem(this._expirationKey(key), this._mEpoch() + ttl);
+                    localStorage.setItem(this._expirationKey(key), Burry._mEpoch() + ttl);
                 } else {
                     localStorage.removeItem(this._expirationKey(key));
                 }
@@ -136,7 +137,7 @@
                         localStorage.setItem(this._internalKey(key), value);
                         if (ttl) {
                             ttl = parseInt(ttl, 10);
-                            localStorage.setItem(this._expirationKey(key), this._mEpoch() + ttl);
+                            localStorage.setItem(this._expirationKey(key), Burry._mEpoch() + ttl);
                         } else {
                             localStorage.removeItem(this._expirationKey(key));
                         }
@@ -189,7 +190,7 @@
         // Returns whether `key` has expired.
         hasExpired: function (key) {
             var expireson = this._expiresOn(key);
-            if (expireson && (expireson < this._mEpoch())) {
+            if (expireson && (expireson < Burry._mEpoch())) {
                 return true;
             }
             return false;
@@ -237,7 +238,7 @@
 
         // Removes all expired items.
         flushExpired: function () {
-            var expirable = this.expirableKeys(), now = this._mEpoch(), key, val;
+            var expirable = this.expirableKeys(), now = Burry._mEpoch(), key, val;
             for (key in expirable) {
                 val = expirable[key];
                 if (val < now) this.remove(key);
