@@ -6,9 +6,9 @@ A simple caching layer on the browser's localStorage
 
 ### Creation
 
-Create a Burry instance of a storage, optionally passing a namespace. A default store is always available with no namespace:
+Create a Burry `Store`, optionally passing a namespace. A default store is always available with no namespace:
 
-        var burry = new Burry('mystuff');
+        var burry = new Burry.Store('mystuff');
 
 You can obtain all available stores, by invoking `stores()`:
 

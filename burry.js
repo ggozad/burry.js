@@ -18,73 +18,76 @@
 }(this, function () {
 
     // Construct a new Burry store with an optional `namespace`.
-    var Burry = function (ns) {
-        var stores = Burry.stores();
-        if (ns) {
-            this._CACHE_SUFFIX = this._CACHE_SUFFIX + ns;
-            this._EXPIRY_KEY = this._EXPIRY_KEY + ns;
-            if (stores.indexOf(ns) === -1)
-                stores.push(ns);
-        }
-        localStorage.setItem('_burry_stores_', JSON.stringify(stores));
-    };
+    var Burry = {
 
-    // time resolution in minutes
-    Burry._EXPIRY_UNITS = 60 * 1000;
+        Store: function (ns) {
+            var stores = Burry.stores();
+            if (ns) {
+                this._CACHE_SUFFIX = this._CACHE_SUFFIX + ns;
+                this._EXPIRY_KEY = this._EXPIRY_KEY + ns;
+                if (stores.indexOf(ns) === -1)
+                    stores.push(ns);
+            }
+            localStorage.setItem('_burry_stores_', JSON.stringify(stores));
+        },
 
-    // Calculate the time since Epoch in minutes
-    Burry._mEpoch = function () {
-        return Math.floor((new Date().getTime())/Burry._EXPIRY_UNITS);
-    };
+        // time resolution in minutes
+        _EXPIRY_UNITS: 60 * 1000,
 
-    Burry.stores = function () {
-        var stores = localStorage.getItem('_burry_stores_');
-        if (stores) {
-            stores = JSON.parse(stores);
-        } else {
-            stores = [''];
-        }
-        return stores;
-    };
+        // Calculate the time since Epoch in minutes
+        _mEpoch: function () {
+            return Math.floor((new Date().getTime())/Burry._EXPIRY_UNITS);
+        },
 
-    // Checks for localStorage & JSON support.
-    Burry.isSupported = function () {
-        try {
-            localStorage.setItem('_burry_', '_burry_');
-            localStorage.removeItem('_burry_');
-        } catch (e) {
-            return false;
-        }
-        if (!JSON) {
-            return false;
-        }
-        return true;
-    };
+        stores: function () {
+            var stores = localStorage.getItem('_burry_stores_');
+            if (stores) {
+                stores = JSON.parse(stores);
+            } else {
+                stores = [''];
+            }
+            return stores;
+        },
 
-    Burry.flushExpired = function () {
-        var i, match, key, val, ns,
-            remove = [],
-            now = Burry._mEpoch();
+        // Checks for localStorage & JSON support.
+        isSupported: function () {
+            try {
+                localStorage.setItem('_burry_', '_burry_');
+                localStorage.removeItem('_burry_');
+            } catch (e) {
+                return false;
+            }
+            if (!JSON) {
+                return false;
+            }
+            return true;
+        },
 
-        for (i=0; i< localStorage.length; i++) {
-            key = localStorage.key(i);
-            match = key.match(/(.+)-_burry_exp_(.*)/);
-            if (match) {
-                val = localStorage.getItem(key);
-                if (val < now) {
-                    key = match[1]; ns = match[2];
-                    remove.push(key + Burry.prototype._CACHE_SUFFIX + ns);
-                    remove.push(key + Burry.prototype._EXPIRY_KEY + ns);
+        flushExpired: function () {
+            var i, match, key, val, ns,
+                remove = [],
+                now = Burry._mEpoch();
+
+            for (i=0; i< localStorage.length; i++) {
+                key = localStorage.key(i);
+                match = key.match(/(.+)-_burry_exp_(.*)/);
+                if (match) {
+                    val = localStorage.getItem(key);
+                    if (val < now) {
+                        key = match[1]; ns = match[2];
+                        remove.push(key + Burry.Store.prototype._CACHE_SUFFIX + ns);
+                        remove.push(key + Burry.Store.prototype._EXPIRY_KEY + ns);
+                    }
                 }
             }
-        }
-        for (i=0; i< remove.length; i++) {
-            localStorage.removeItem(remove[i]);
+            for (i=0; i< remove.length; i++) {
+                localStorage.removeItem(remove[i]);
+            }
         }
     };
 
     // Instance methods
-    Burry.prototype = {
+    Burry.Store.prototype = {
 
         // Constants:
         // Suffix to all keys in the cache

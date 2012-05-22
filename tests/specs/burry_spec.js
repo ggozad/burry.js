@@ -10,9 +10,9 @@
 
             it('returns the stores that have been created', function () {
                 var burryfoo, burrybar;
-                burryfoo = new Burry('foo');
-                burrybar = new Burry('bar');
-                burrybar2 = new Burry('bar');
+                burryfoo = new Burry.Store('foo');
+                burrybar = new Burry.Store('bar');
+                burrybar2 = new Burry.Store('bar');
                 expect(Burry.stores()).toEqual(['', 'foo', 'bar']);
             });
 
@@ -27,8 +27,8 @@
             });
 
             it('flushes expired key/values from all stores', function () {
-                burryfoo = new Burry('foo');
-                burrybar = new Burry('bar');
+                burryfoo = new Burry.Store('foo');
+                burrybar = new Burry.Store('bar');
                 burryfoo.set('expired1', {foo: 'bar'}, -1);
                 burryfoo.set('expired2', {foo: 'bar'}, -2);
                 burryfoo.set('not-expired', {foo: 'bar'}, 10);
@@ -55,7 +55,7 @@
             var burry;
 
             beforeEach(function () {
-                burry = new Burry('');
+                burry = new Burry.Store('');
             });
 
 
@@ -78,7 +78,7 @@
             });
 
             it('applies correctly the namespace on the keys on construction', function () {
-                var nsburry = new Burry('testing');
+                var nsburry = new Burry.Store('testing');
                 expect(nsburry._isInternalKey('foo-_burry_testing')).toEqual('foo');
                 expect(nsburry._isInternalKey('foo-_burry_')).toBeFalsy();
                 expect(nsburry._isExpirationKey('foo-_burry_exp_testing')).toEqual('foo');
