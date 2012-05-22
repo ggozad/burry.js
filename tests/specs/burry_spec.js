@@ -2,195 +2,209 @@
 
     describe('burry.js Storage', function () {
 
-        var burry;
-
-        beforeEach(function () {
-            burry = new Burry();
-        });
-
         afterEach(function () {
             localStorage.clear();
         });
 
-        it('calculates time elapsed since epoch in minutues', function () {
-            var datea = new Date(10 * 60 * 1000);
-            spyOn(window, 'Date').andReturn(datea);
-            expect(burry._mEpoch()).toEqual(10);
+        describe('Static methods', function () {
+
+            it('returns the stores that have been created', function () {
+                var burryfoo, burrybar;
+                burryfoo = new Burry('foo');
+                burrybar = new Burry('bar');
+                burrybar2 = new Burry('bar');
+                expect(Burry.stores()).toEqual(['', 'foo', 'bar']);
+            });
         });
 
-        it('calculates the key used internally', function () {
-            expect(burry._internalKey('akey')).toEqual('akey-_burry_');
-        });
+        describe('Instance methods', function () {
 
-        it('calculates the expiration key used internally', function () {
-            expect(burry._expirationKey(12345)).toEqual('12345-_burry_exp_');
-        });
+            var burry;
 
-        it('decides whether a key is a "burry" key', function () {
-            expect(burry._isInternalKey('foo-_burry_')).toEqual('foo');
-            expect(burry._isInternalKey('foo-_burry_bar')).toBeFalsy();
-        });
+            beforeEach(function () {
+                burry = new Burry('');
+            });
 
-        it('decides whether a key is a "burry" expiration key', function () {
-            expect(burry._isExpirationKey('foo-_burry_exp_')).toEqual('foo');
-            expect(burry._isExpirationKey('foo-_burry_exp_bar')).toBeFalsy();
-        });
+            it('calculates time elapsed since epoch in minutues', function () {
+                var datea = new Date(10 * 60 * 1000);
+                spyOn(window, 'Date').andReturn(datea);
+                expect(burry._mEpoch()).toEqual(10);
+            });
 
-        it('supports localStorage', function () {
-            expect(burry.isSupported()).toBeTruthy();
-        });
+            it('calculates the key used internally', function () {
+                expect(burry._internalKey('akey')).toEqual('akey-_burry_');
+            });
 
-        it('applies correctly the namespace on the keys on construction', function () {
-            var nsburry = new Burry('testing');
-            expect(nsburry._isInternalKey('foo-_burry_testing')).toEqual('foo');
-            expect(nsburry._isInternalKey('foo-_burry_')).toBeFalsy();
-            expect(nsburry._isExpirationKey('foo-_burry_exp_testing')).toEqual('foo');
-            expect(nsburry._isExpirationKey('foo-_burry_exp_')).toBeFalsy();
+            it('calculates the expiration key used internally', function () {
+                expect(burry._expirationKey(12345)).toEqual('12345-_burry_exp_');
+            });
 
-        });
+            it('decides whether a key is a "burry" key', function () {
+                expect(burry._isInternalKey('foo-_burry_')).toEqual('foo');
+                expect(burry._isInternalKey('foo-_burry_bar')).toBeFalsy();
+            });
 
-        it('stores a key/value to localStorage', function () {
-            burry.set('akey', {foo: 'bar'});
-            expect(localStorage.getItem('akey-_burry_')).toEqual('{"foo":"bar"}');
-        });
+            it('decides whether a key is a "burry" expiration key', function () {
+                expect(burry._isExpirationKey('foo-_burry_exp_')).toEqual('foo');
+                expect(burry._isExpirationKey('foo-_burry_exp_bar')).toBeFalsy();
+            });
 
-        it('stores a key/value to localStorage with an expiration time', function () {
-            burry.set('akey', {foo: 'bar'}, 10);
-            expect(localStorage.getItem('akey-_burry_')).toEqual('{"foo":"bar"}');
-            expect(parseInt(localStorage.getItem('akey-_burry_exp_'), 10)).toEqual(burry._mEpoch() + 10);
-        });
+            it('supports localStorage', function () {
+                expect(burry.isSupported()).toBeTruthy();
+            });
 
-        it('returns the value from a stored key', function () {
-            burry.set('akey', {foo: 'bar'});
-            expect(burry.get('akey')).toEqual({foo: 'bar'});
-        });
+            it('applies correctly the namespace on the keys on construction', function () {
+                var nsburry = new Burry('testing');
+                expect(nsburry._isInternalKey('foo-_burry_testing')).toEqual('foo');
+                expect(nsburry._isInternalKey('foo-_burry_')).toBeFalsy();
+                expect(nsburry._isExpirationKey('foo-_burry_exp_testing')).toEqual('foo');
+                expect(nsburry._isExpirationKey('foo-_burry_exp_')).toBeFalsy();
+            });
 
-        it('returns undefined for a non-existing key', function () {
-            expect(burry.get('akey')).toBeUndefined();
-        });
+            it('stores a key/value to localStorage', function () {
+                burry.set('akey', {foo: 'bar'});
+                expect(localStorage.getItem('akey-_burry_')).toEqual('{"foo":"bar"}');
+            });
 
-        it('returns undefined for an expired key, and removes it from localStorage', function () {
-            burry.set('akey', {foo: 'bar'}, -1);
-            expect(localStorage.getItem('akey-_burry_')).toEqual('{"foo":"bar"}');
-            expect(parseInt(localStorage.getItem('akey-_burry_exp_'), 10)).toEqual(burry._mEpoch() - 1);
-            expect(burry.get('akey')).toBeUndefined();
-            expect(localStorage.getItem('akey-_burry_')).toBeNull();
-            expect(localStorage.getItem('akey-_burry_exp_')).toBeNull();
-            expect(burry.get('akey')).toBeUndefined();
-        });
+            it('stores a key/value to localStorage with an expiration time', function () {
+                burry.set('akey', {foo: 'bar'}, 10);
+                expect(localStorage.getItem('akey-_burry_')).toEqual('{"foo":"bar"}');
+                expect(parseInt(localStorage.getItem('akey-_burry_exp_'), 10)).toEqual(burry._mEpoch() + 10);
+            });
 
-        it('adds a key/value when the key does not already exist or has expired', function () {
-            burry.set('akey', {foo: 'bar'});
-            burry.add('akey', {bar: 'foo'});
-            expect(burry.get('akey')).toEqual({foo: 'bar'});
-            burry.add('otherkey', {foo: 'bar'});
-            expect(burry.get('otherkey')).toEqual({foo: 'bar'});
-            burry.set('akey', {foo: 'bar'}, -10);
-            burry.add('akey', {bar: 'foo'});
-            expect(burry.get('akey')).toEqual({bar: 'foo'});
-        });
+            it('returns the value from a stored key', function () {
+                burry.set('akey', {foo: 'bar'});
+                expect(burry.get('akey')).toEqual({foo: 'bar'});
+            });
 
-        it('replaces a key/value only when the key already exists and has not expired', function () {
-            burry.set('akey', {foo: 'bar'});
-            burry.replace('akey', {bar: 'foo'});
-            expect(burry.get('akey')).toEqual({bar: 'foo'});
-            burry.replace('otherkey', {foo: 'bar'});
-            expect(burry.get('otherkey')).not.toBeDefined();
-            burry.set('akey', {foo: 'bar'}, -10);
-            burry.replace('akey', {bar: 'foo'});
-            expect(burry.get('akey')).not.toBeDefined();
-        });
+            it('returns undefined for a non-existing key', function () {
+                expect(burry.get('akey')).toBeUndefined();
+            });
 
-        it('removes a key/value', function () {
-            burry.set('akey', {foo: 'bar'});
-            burry.remove('akey');
-            expect(burry.get('akey')).toBeUndefined();
-            expect(localStorage.getItem('akey-_burry_')).toBeNull();
-            expect(localStorage.getItem('akey-_burry_exp_')).toBeNull();
-        });
+            it('returns undefined for an expired key, and removes it from localStorage', function () {
+                burry.set('akey', {foo: 'bar'}, -1);
+                expect(localStorage.getItem('akey-_burry_')).toEqual('{"foo":"bar"}');
+                expect(parseInt(localStorage.getItem('akey-_burry_exp_'), 10)).toEqual(burry._mEpoch() - 1);
+                expect(burry.get('akey')).toBeUndefined();
+                expect(localStorage.getItem('akey-_burry_')).toBeNull();
+                expect(localStorage.getItem('akey-_burry_exp_')).toBeNull();
+                expect(burry.get('akey')).toBeUndefined();
+            });
 
-        it('increments a counter', function () {
-            burry.incr('counter');
-            expect(burry.get('counter')).toEqual(1);
-            burry.set('counter', 0);
-            burry.incr('counter');
-            burry.incr('counter');
-            expect(burry.get('counter')).toEqual(2);
-        });
+            it('adds a key/value when the key does not already exist or has expired', function () {
+                burry.set('akey', {foo: 'bar'});
+                burry.add('akey', {bar: 'foo'});
+                expect(burry.get('akey')).toEqual({foo: 'bar'});
+                burry.add('otherkey', {foo: 'bar'});
+                expect(burry.get('otherkey')).toEqual({foo: 'bar'});
+                burry.set('akey', {foo: 'bar'}, -10);
+                burry.add('akey', {bar: 'foo'});
+                expect(burry.get('akey')).toEqual({bar: 'foo'});
+            });
 
-        it('decrements a counter', function () {
-            burry.decr('counter');
-            expect(burry.get('counter')).toEqual(-1);
-            burry.set('counter', 0);
-            burry.decr('counter');
-            burry.decr('counter');
-            expect(burry.get('counter')).toEqual(-2);
-        });
+            it('replaces a key/value only when the key already exists and has not expired', function () {
+                burry.set('akey', {foo: 'bar'});
+                burry.replace('akey', {bar: 'foo'});
+                expect(burry.get('akey')).toEqual({bar: 'foo'});
+                burry.replace('otherkey', {foo: 'bar'});
+                expect(burry.get('otherkey')).not.toBeDefined();
+                burry.set('akey', {foo: 'bar'}, -10);
+                burry.replace('akey', {bar: 'foo'});
+                expect(burry.get('akey')).not.toBeDefined();
+            });
 
-        it('determines if an item has expired', function () {
-            burry.set('akey', {foo: 'bar'});
-            expect(burry.hasExpired('akey')).toBeFalsy();
-            burry.set('akey', {foo: 'bar'}, 10);
-            expect(burry.hasExpired('akey')).toBeFalsy();
-            burry.set('akey', {foo: 'bar'}, -10);
-            expect(burry.hasExpired('akey')).toBeTruthy();
-        });
+            it('removes a key/value', function () {
+                burry.set('akey', {foo: 'bar'});
+                burry.remove('akey');
+                expect(burry.get('akey')).toBeUndefined();
+                expect(localStorage.getItem('akey-_burry_')).toBeNull();
+                expect(localStorage.getItem('akey-_burry_exp_')).toBeNull();
+            });
 
-        it('returns all cache keys', function () {
-            var keys;
-            burry.set('expirable1', {foo: 'bar'}, 10);
-            burry.set('expirable2', {foo: 'bar'}, -20);
-            burry.set('non-expirable', {foo: 'bar'});
-            expect(burry.keys()).toEqual(['non-expirable', 'expirable2', 'expirable1']);
-        });
+            it('increments a counter', function () {
+                burry.incr('counter');
+                expect(burry.get('counter')).toEqual(1);
+                burry.set('counter', 0);
+                burry.incr('counter');
+                burry.incr('counter');
+                expect(burry.get('counter')).toEqual(2);
+            });
 
-        it('returns all expirable keys', function () {
-            var expirable, fakedate = new Date(0);
-            spyOn(window, 'Date').andReturn(fakedate);
-            burry.set('expirable1', {foo: 'bar'}, 10);
-            burry.set('expirable2', {foo: 'bar'}, 20);
-            burry.set('non-expirable', {foo: 'bar'});
-            expect(burry.expirableKeys()).toEqual({expirable1: 10, expirable2: 20});
-        });
+            it('decrements a counter', function () {
+                burry.decr('counter');
+                expect(burry.get('counter')).toEqual(-1);
+                burry.set('counter', 0);
+                burry.decr('counter');
+                burry.decr('counter');
+                expect(burry.get('counter')).toEqual(-2);
+            });
 
-        it('flushes all Burry items', function () {
-            burry.set('expirable2', {foo: 'bar'}, 20);
-            burry.set('non-expirable', {foo: 'bar'});
-            localStorage.setItem('foo', 'bar');
-            burry.flush();
-            expect(localStorage.length).toEqual(1);
-            expect(localStorage.key(0)).toEqual('foo');
-        });
+            it('determines if an item has expired', function () {
+                burry.set('akey', {foo: 'bar'});
+                expect(burry.hasExpired('akey')).toBeFalsy();
+                burry.set('akey', {foo: 'bar'}, 10);
+                expect(burry.hasExpired('akey')).toBeFalsy();
+                burry.set('akey', {foo: 'bar'}, -10);
+                expect(burry.hasExpired('akey')).toBeTruthy();
+            });
 
-        it('flushes expired key/values', function () {
-            burry.set('expired1', {foo: 'bar'}, -1);
-            burry.set('expired2', {foo: 'bar'}, -2);
-            burry.set('not-expired', {foo: 'bar'}, 10);
-            burry.flushExpired();
-            expect(localStorage.getItem(burry._internalKey('expired1'))).toBeNull();
-            expect(localStorage.getItem(burry._expirationKey('expired1'))).toBeNull();
-            expect(localStorage.getItem(burry._internalKey('expired2'))).toBeNull();
-            expect(localStorage.getItem(burry._expirationKey('expired2'))).toBeNull();
-            expect(burry.get('not-expired')).toBeDefined();
-        });
+            it('returns all cache keys', function () {
+                var keys;
+                burry.set('expirable1', {foo: 'bar'}, 10);
+                burry.set('expirable2', {foo: 'bar'}, -20);
+                burry.set('non-expirable', {foo: 'bar'});
+                expect(burry.keys()).toEqual(['non-expirable', 'expirable2', 'expirable1']);
+            });
 
-        it('removes expired objects when setting a value that does not fit in localStorage', function () {
-            var biggie = Array(1024*1024 + 1).join('0'),
-                key = '';
-            while (true) {
-                try {
-                    key += 'key';
-                    localStorage.setItem(burry._internalKey(key), JSON.stringify(biggie));
-                    localStorage.setItem(burry._expirationKey(key), '0');
-                } catch (e) {
-                    // The storage is now full.
-                    break;
+            it('returns all expirable keys', function () {
+                var expirable, fakedate = new Date(0);
+                spyOn(window, 'Date').andReturn(fakedate);
+                burry.set('expirable1', {foo: 'bar'}, 10);
+                burry.set('expirable2', {foo: 'bar'}, 20);
+                burry.set('non-expirable', {foo: 'bar'});
+                expect(burry.expirableKeys()).toEqual({expirable1: 10, expirable2: 20});
+            });
+
+            it('flushes all Burry items', function () {
+                burry.set('expirable2', {foo: 'bar'}, 20);
+                burry.set('non-expirable', {foo: 'bar'});
+                localStorage.setItem('foo', 'bar');
+                burry.flush();
+                expect(localStorage.length).toEqual(2);
+                expect(localStorage.key(0)).toEqual('_burry_stores_');
+                expect(localStorage.key(1)).toEqual('foo');
+            });
+
+            it('flushes expired key/values', function () {
+                burry.set('expired1', {foo: 'bar'}, -1);
+                burry.set('expired2', {foo: 'bar'}, -2);
+                burry.set('not-expired', {foo: 'bar'}, 10);
+                burry.flushExpired();
+                expect(localStorage.getItem(burry._internalKey('expired1'))).toBeNull();
+                expect(localStorage.getItem(burry._expirationKey('expired1'))).toBeNull();
+                expect(localStorage.getItem(burry._internalKey('expired2'))).toBeNull();
+                expect(localStorage.getItem(burry._expirationKey('expired2'))).toBeNull();
+                expect(burry.get('not-expired')).toBeDefined();
+            });
+
+            it('removes expired objects when setting a value that does not fit in localStorage', function () {
+                var biggie = Array(1024*1024 + 1).join('0'),
+                    key = '';
+                while (true) {
+                    try {
+                        key += 'key';
+                        localStorage.setItem(burry._internalKey(key), JSON.stringify(biggie));
+                        localStorage.setItem(burry._expirationKey(key), '0');
+                    } catch (e) {
+                        // The storage is now full.
+                        break;
+                    }
                 }
-            }
-            expect(localStorage.length > 0).toBeTruthy();
-            burry.set('biggie', biggie);
-                expect(localStorage.length).toEqual(1);
-            expect(burry.get('biggie')).toEqual(biggie);
+                expect(localStorage.length > 0).toBeTruthy();
+                burry.set('biggie', biggie);
+                    expect(localStorage.length).toEqual(2);
+                expect(burry.get('biggie')).toEqual(biggie);
+            });
         });
     });
 

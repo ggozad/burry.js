@@ -17,13 +17,29 @@
     }
 }(this, function () {
 
+    // Construct a new Burry store with an optional `namespace`.
     var Burry = function (ns) {
+        var stores = Burry.stores();
         if (ns) {
             this._CACHE_SUFFIX = this._CACHE_SUFFIX + ns;
             this._EXPIRY_KEY = this._EXPIRY_KEY + ns;
+            if (stores.indexOf(ns) === -1)
+                stores.push(ns);
         }
+        localStorage.setItem('_burry_stores_', JSON.stringify(stores));
     };
 
+    Burry.stores = function () {
+        var stores = localStorage.getItem('_burry_stores_');
+        if (stores) {
+            stores = JSON.parse(stores);
+        } else {
+            stores = [''];
+        }
+        return stores;
+    };
+
+    // Instance methods
     Burry.prototype = {
 
         // Constants:
