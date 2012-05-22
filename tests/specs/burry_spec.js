@@ -22,6 +22,10 @@
                 expect(Burry._mEpoch()).toEqual(10);
             });
 
+            it('supports localStorage', function () {
+                expect(Burry.isSupported()).toBeTruthy();
+            });
+
         });
 
         describe('Instance methods', function () {
@@ -49,10 +53,6 @@
             it('decides whether a key is a "burry" expiration key', function () {
                 expect(burry._isExpirationKey('foo-_burry_exp_')).toEqual('foo');
                 expect(burry._isExpirationKey('foo-_burry_exp_bar')).toBeFalsy();
-            });
-
-            it('supports localStorage', function () {
-                expect(burry.isSupported()).toBeTruthy();
             });
 
             it('applies correctly the namespace on the keys on construction', function () {

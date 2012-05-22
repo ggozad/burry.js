@@ -47,6 +47,20 @@
         return stores;
     };
 
+    // Checks for localStorage & JSON support.
+    Burry.isSupported = function () {
+        try {
+            localStorage.setItem('_burry_', '_burry_');
+            localStorage.removeItem('_burry_');
+        } catch (e) {
+            return false;
+        }
+        if (!JSON) {
+            return false;
+        }
+        return true;
+    };
+
     // Instance methods
     Burry.prototype = {
 
@@ -243,20 +257,6 @@
                 val = expirable[key];
                 if (val < now) this.remove(key);
             }
-        },
-
-        // Checks for localStorage & JSON support.
-        isSupported: function () {
-            try {
-                localStorage.setItem('_burry_', '_burry_');
-                localStorage.removeItem('_burry_');
-            } catch (e) {
-                return false;
-            }
-            if (!JSON) {
-                return false;
-            }
-            return true;
         }
     };
 
