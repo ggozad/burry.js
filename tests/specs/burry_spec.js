@@ -177,7 +177,10 @@
                 burry.set('expirable1', {foo: 'bar'}, 10);
                 burry.set('expirable2', {foo: 'bar'}, -20);
                 burry.set('non-expirable', {foo: 'bar'});
-                expect(burry.keys()).toEqual(['non-expirable', 'expirable2', 'expirable1']);
+                expect(burry.keys().indexOf('expirable1')).not.toEqual(-1);
+                expect(burry.keys().indexOf('expirable2')).not.toEqual(-1);
+                expect(burry.keys().indexOf('non-expirable')).not.toEqual(-1);
+
             });
 
             it('returns all expirable keys', function () {
