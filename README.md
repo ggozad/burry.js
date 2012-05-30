@@ -12,6 +12,14 @@ Create a Burry `Store`, optionally passing a namespace. A default store is alway
 var burry = new Burry.Store('mystuff');
 ```
 
+If you want to also set a default time-to-live on a namespaced store, pass the time-to-live as a second parameter. For instance,
+
+```javascript
+var burrywithttl = new Burry.Store('mystuff', 10);
+```
+
+will create a store where the default time-to-live when you set items is 10 minutes.
+
 You can obtain all available stores, by invoking `stores()`:
 
 ```javascript

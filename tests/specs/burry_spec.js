@@ -58,6 +58,12 @@
                 burry = new Burry.Store('');
             });
 
+            it('allows to set a default ttl', function () {
+                burry = new Burry.Store('', 10);
+                burry.set('akey', {foo: 'bar'});
+                expect(localStorage.getItem('akey-_burry_')).toEqual('{"foo":"bar"}');
+                expect(parseInt(localStorage.getItem('akey-_burry_exp_'), 10)).toEqual(Burry._mEpoch() + 10);
+            });
 
             it('calculates the key used internally', function () {
                 expect(burry._internalKey('akey')).toEqual('akey-_burry_');
