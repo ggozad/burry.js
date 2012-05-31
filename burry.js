@@ -52,16 +52,19 @@
 
         // Checks for localStorage & JSON support.
         isSupported: function () {
+            // If this has been called before we already know.
+            if (Burry._isSupported) return Burry._isSupported;
+
             try {
                 localStorage.setItem('_burry_', '_burry_');
                 localStorage.removeItem('_burry_');
             } catch (e) {
-                return false;
+                return Burry._isSupported = false;
             }
             if (!JSON) {
-                return false;
+                return Burry._isSupported = false;
             }
-            return true;
+            return Burry._isSupported = true;
         },
 
         flushExpired: function () {
