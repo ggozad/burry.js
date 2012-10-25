@@ -1,4 +1,4 @@
-//    Burry.js Storage v0.1
+//    Burry.js Storage v0.1.0
 
 //    (c) 2012 Yiorgis Gozadinos, Crypho AS.
 //    Burry.js is distributed under the MIT license.

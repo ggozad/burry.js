@@ -1,0 +1,22 @@
+{
+  "name": "Burry",
+  "version": "0.1.0",
+  "author": " Yiorgis Gozadinos <ggozad@crypho.com>",
+  "description": "A simple caching layer on the browser's localStorage",
+  "contributors": [
+    {
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ggozad/burry.js"
+  },
+  "keywords": [
+    "Backbone",
+    "caching",
+    "localStorage"
+  ],
+  "dependencies" : {
+  },
+  "license": "MIT"
+}
