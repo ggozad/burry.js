@@ -76,5 +76,5 @@ The following more esoteric functions are also exposed:
 
 ## License
 
-Backbone.xmpp.storage is Copyright (C) 2012 Yiorgis Gozadinos, Crypho AS.
+Burry.js is Copyright (C) 2012-13 Yiorgis Gozadinos, Crypho AS.
 It is distributed under the MIT license.
