@@ -70,11 +70,12 @@
         flushExpired: function () {
             var i, match, key, val, ns,
                 remove = [],
-                now = Burry._mEpoch();
+                now = Burry._mEpoch(),
+                reKey = new RegExp('(.+)' + Burry.Store.prototype._EXPIRY_KEY + '(.*)');
 
             for (i=0; i< localStorage.length; i++) {
                 key = localStorage.key(i);
-                match = key.match(/(.+)-_burry_exp_(.*)/);
+                match = key.match(reKey);
                 if (match) {
                     val = localStorage.getItem(key);
                     if (val < now) {
