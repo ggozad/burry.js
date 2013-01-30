@@ -27,8 +27,6 @@
             });
 
             it('flushes expired key/values from all stores', function () {
-                var oldExpiryKey = Burry.Store.prototype._EXPIRY_KEY;
-                Burry.Store.prototype._EXPIRY_KEY = '-EXP-';
                 burryfoo = new Burry.Store('foo');
                 burrybar = new Burry.Store('bar');
                 burryfoo.set('expired1', {foo: 'bar'}, -1);
@@ -48,7 +46,6 @@
                 expect(localStorage.getItem(burrybar._internalKey('expired2'))).toBeNull();
                 expect(localStorage.getItem(burrybar._expirationKey('expired2'))).toBeNull();
                 expect(burrybar.get('not-expired')).toBeDefined();
-                Burry.Store.prototype._EXPIRY_KEY = oldExpiryKey;
             });
         });
 
