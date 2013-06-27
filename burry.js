@@ -40,8 +40,6 @@
             this.length = 0;
         },
 
-        memoryStorage: new Burry.MemoryStorage(),
-
         // Time resolution in minutes
         _EXPIRY_UNITS: 60 * 1000,
 
@@ -69,6 +67,9 @@
             } else if (storage === 'globalStorage' && typeof globalStorage !== 'undefined') {
                 storage = globalStorage;
             } else if (storage === 'memory') {
+                if (typeof Burry.memoryStorage === 'undefined') {
+                    Burry.memoryStorage = new Burry.MemoryStorage();
+                }
                 storage = Burry.memoryStorage;
             } else if (storage === 'memoryInstance') {
                 storage = new Burry.MemoryStorage();
@@ -116,6 +117,8 @@
         }
     };
 
+    // Instance methods
+
     Burry.MemoryStorage.prototype = {
 
         key: function (index) {
@@ -152,8 +155,6 @@
             this.length = 0;
         }
     };
-
-    // Instance methods
 
     Burry.Store.prototype = {
 
