@@ -1,0 +1,10 @@
+{
+  "name": "burry.js",
+  "repo": "ggozad/burry.js",
+  "description": "A simple caching layer on the browser's localStorage",
+  "dependencies": {},
+  "development": {},
+  "main": [
+    "burry.js"
+  ]
+}
