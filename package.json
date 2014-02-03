@@ -1,6 +1,6 @@
 {
   "name": "Burry",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "author": " Yiorgis Gozadinos <ggozad@crypho.com>",
   "description": "A simple caching layer on the browser's localStorage",
   "contributors": [

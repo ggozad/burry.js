@@ -2,9 +2,21 @@
   "name": "burry.js",
   "repo": "ggozad/burry.js",
   "description": "A simple caching layer on the browser's localStorage",
-  "dependencies": {},
-  "development": {},
+  "keywords": [
+    "caching",
+    "localStorage"
+  ],
   "main": [
     "burry.js"
-  ]
+  ],
+  "ignore": [
+    "tests",
+    "**/.*",
+  ],
+  "version": "1.0.0",
+  "homepage": "https://github.com/ggozad/burry.js",
+  "authors": [
+    "Yiorgis Gozadinos <ggozad@crypho.com>"
+  ],
+  "license": "MIT"
 }
