@@ -203,8 +203,12 @@
                 localStorage.setItem('foo', 'bar');
                 burry.flush();
                 expect(localStorage.length).toEqual(2);
-                expect(localStorage.key(0)).toEqual('_burry_stores_');
-                expect(localStorage.key(1)).toEqual('foo');
+                var keys = [
+                    localStorage.key(0),
+                    localStorage.key(1)
+                ];
+                expect(keys).toContain('_burry_stores_');
+                expect(keys).toContain('foo');
             });
 
             it('flushes expired key/values', function () {
