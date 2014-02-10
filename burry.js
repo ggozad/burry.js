@@ -176,7 +176,14 @@
                     localStorage.removeItem(this._expirationKey(key));
                 }
             } catch (e) {
-                if (e.name === 'QUOTA_EXCEEDED_ERR' || e.name === 'NS_ERROR_DOM_QUOTA_REACHED') {
+                    // IE
+                if (e.code === 22 ||
+                    // Mobile Safari
+                    e.name === 'QUOTA_EXCEEDED_ERR' ||
+                    // Chrome
+                    e.name === 'QuoteExceededError' ||
+                    // Firefox
+                    e.name === 'NS_ERROR_DOM_QUOTA_REACHED') {
                     // No space left on localStorage, let's flush expired items and try agagin.
                     Burry.flushExpired();
                     try {
