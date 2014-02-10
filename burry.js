@@ -163,29 +163,29 @@
 
         // Sets a `key`/`value` on the cache. Optionally, sets the expiration in `ttl` minutes.
         set: function (key, value, ttl) {
-            var i, bkey, expires = {};
-            ttl = ttl || this.default_ttl;
+            var i, bkey,
+                expires = {},
+                self = this,
+                _set = function() {
+                    localStorage.setItem(self._internalKey(key), value);
+                    if (ttl) {
+                        localStorage.setItem(self._expirationKey(key), Burry._mEpoch() + ttl);
+                    } else {
+                        localStorage.removeItem(self._expirationKey(key));
+                    }
+                };
+            ttl = ttl || self.default_ttl;
             if (ttl) ttl = parseInt(ttl, 10);
             if (typeof key === undefined || typeof value === undefined) return;
             value = JSON.stringify(value);
             try {
-                localStorage.setItem(this._internalKey(key), value);
-                if (ttl) {
-                    localStorage.setItem(this._expirationKey(key), Burry._mEpoch() + ttl);
-                } else {
-                    localStorage.removeItem(this._expirationKey(key));
-                }
+                _set();
             } catch (e) {
                 if (e.name === 'QUOTA_EXCEEDED_ERR' || e.name === 'NS_ERROR_DOM_QUOTA_REACHED') {
                     // No space left on localStorage, let's flush expired items and try agagin.
                     Burry.flushExpired();
                     try {
-                        localStorage.setItem(this._internalKey(key), value);
-                        if (ttl) {
-                            localStorage.setItem(this._expirationKey(key), Burry._mEpoch() + ttl);
-                        } else {
-                            localStorage.removeItem(this._expirationKey(key));
-                        }
+                        _set();
                     }
                     catch (e) {
                         // Oh well. Let's forget about it.
