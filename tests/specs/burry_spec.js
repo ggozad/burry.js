@@ -111,7 +111,7 @@
             });
 
             it('returns undefined for an expired key, and removes it from localStorage', function () {
-                burry.set('akey', {foo: 'bar'}, -1);
+                expect(burry.set('akey', {foo: 'bar'}, -1)).toBeTruthy();
                 expect(localStorage.getItem('akey-_burry_')).toEqual('{"foo":"bar"}');
                 expect(parseInt(localStorage.getItem('akey-_burry_exp_'), 10)).toEqual(Burry._mEpoch() - 1);
                 expect(burry.get('akey')).toBeUndefined();
@@ -121,29 +121,29 @@
             });
 
             it('adds a key/value when the key does not already exist or has expired', function () {
-                burry.set('akey', {foo: 'bar'});
-                burry.add('akey', {bar: 'foo'});
+                expect(burry.set('akey', {foo: 'bar'})).toBeTruthy();
+                expect(burry.add('akey', {bar: 'foo'})).toBeFalsy();
                 expect(burry.get('akey')).toEqual({foo: 'bar'});
-                burry.add('otherkey', {foo: 'bar'});
+                expect(burry.add('otherkey', {foo: 'bar'})).toBeTruthy();
                 expect(burry.get('otherkey')).toEqual({foo: 'bar'});
-                burry.set('akey', {foo: 'bar'}, -10);
-                burry.add('akey', {bar: 'foo'});
+                expect(burry.set('akey', {foo: 'bar'}, -10)).toBeTruthy();
+                expect(burry.add('akey', {bar: 'foo'})).toBeTruthy();
                 expect(burry.get('akey')).toEqual({bar: 'foo'});
             });
 
             it('replaces a key/value only when the key already exists and has not expired', function () {
-                burry.set('akey', {foo: 'bar'});
-                burry.replace('akey', {bar: 'foo'});
+                expect(burry.set('akey', {foo: 'bar'})).toBeTruthy();
+                expect(burry.replace('akey', {bar: 'foo'})).toBeTruthy();
                 expect(burry.get('akey')).toEqual({bar: 'foo'});
-                burry.replace('otherkey', {foo: 'bar'});
+                expect(burry.replace('otherkey', {foo: 'bar'})).toBeFalsy();
                 expect(burry.get('otherkey')).not.toBeDefined();
-                burry.set('akey', {foo: 'bar'}, -10);
-                burry.replace('akey', {bar: 'foo'});
+                expect(burry.set('akey', {foo: 'bar'}, -10)).toBeTruthy();
+                expect(burry.replace('akey', {bar: 'foo'})).toBeFalsy();
                 expect(burry.get('akey')).not.toBeDefined();
             });
 
             it('removes a key/value', function () {
-                burry.set('akey', {foo: 'bar'});
+                expect(burry.set('akey', {foo: 'bar'})).toBeTruthy();
                 burry.remove('akey');
                 expect(burry.get('akey')).toBeUndefined();
                 expect(localStorage.getItem('akey-_burry_')).toBeNull();
@@ -237,9 +237,27 @@
                     }
                 }
                 expect(localStorage.length > 0).toBeTruthy();
-                burry.set('biggie', biggie);
-                    expect(localStorage.length).toEqual(2);
+                expect(burry.set('biggie', biggie)).toBeTruthy();
+                expect(localStorage.length).toEqual(2);
                 expect(burry.get('biggie')).toEqual(biggie);
+            });
+
+            it('fails when setting a value that does not fit in localStorage', function () {
+                var biggie = Array(1024*1024 + 1).join('0'),
+                    key = '';
+                while (true) {
+                    try {
+                        key += 'key';
+                        localStorage.setItem(burry._internalKey(key), JSON.stringify(biggie));
+                        localStorage.setItem(burry._expirationKey(key), Burry._mEpoch() + 86400);
+                    } catch (e) {
+                        // The storage is now full.
+                        break;
+                    }
+                }
+                expect(localStorage.length > 0).toBeTruthy();
+                expect(burry.set('biggie', biggie)).toBeFalsy();
+                expect(burry.get('biggie')).toBeUndefined();
             });
         });
     });

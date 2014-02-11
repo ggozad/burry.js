@@ -176,7 +176,9 @@
                 };
             ttl = ttl || self.default_ttl;
             if (ttl) ttl = parseInt(ttl, 10);
-            if (typeof key === undefined || typeof value === undefined) return;
+            if (typeof key === undefined || typeof value === undefined) {
+                return false;
+            }
             value = JSON.stringify(value);
             try {
                 _set();
@@ -195,24 +197,27 @@
                         _set();
                     }
                     catch (e) {
-                        // Oh well. Let's forget about it.
+                        return false;
                     }
                 }
             }
+            return true;
         },
 
         // Sets a `key`/`value` on the cache as does **set** but only if the key does not already exist or has expired.
         add: function (key, value, ttl) {
             if (localStorage.getItem(this._internalKey(key)) === null || this.hasExpired(key)) {
-                this.set(key, value, ttl);
+                return this.set(key, value, ttl);
             }
+            return false;
         },
 
         // Sets a `key`/`value` on the cache as does **set** but only if the key already exist and has not expired.
         replace: function (key, value, ttl) {
             if (localStorage.getItem(this._internalKey(key)) !== null && !this.hasExpired(key)) {
-                this.set(key, value, ttl);
+                return this.set(key, value, ttl);
             }
+            return false;
         },
 
         // Removes an item from the cache.
