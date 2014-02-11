@@ -18,7 +18,7 @@
 
             it('calculates time elapsed since epoch in minutues', function () {
                 var datea = new Date(10 * 60 * 1000);
-                spyOn(window, 'Date').andReturn(datea);
+                spyOn(window, 'Date').and.returnValue(datea);
                 expect(Burry._mEpoch()).toEqual(10);
             });
 
@@ -190,7 +190,7 @@
 
             it('returns all expirable keys', function () {
                 var expirable, fakedate = new Date(0);
-                spyOn(window, 'Date').andReturn(fakedate);
+                spyOn(window, 'Date').and.returnValue(fakedate);
                 burry.set('expirable1', {foo: 'bar'}, 10);
                 burry.set('expirable2', {foo: 'bar'}, 20);
                 burry.set('non-expirable', {foo: 'bar'});

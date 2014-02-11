@@ -9,6 +9,9 @@
   "main": [
     "burry.js"
   ],
+  "devDependencies": {
+    "jasmine": ""
+  },
   "ignore": [
     "tests",
     "**/.*"
